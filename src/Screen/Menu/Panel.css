@@ -1,0 +1,52 @@
+.panel-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    color: white;
+    border-radius: 8px;
+  }
+  
+  .panel-title {
+    color: #27ae60;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .chart-container {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);    
+    color: #2c3e50;
+  }
+  
+  .table-container {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #2c3e50;
+  }
+  
+  .sales-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  
+  .sales-table th, .sales-table td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+  }
+  
+  .sales-table th {
+    background-color: #27ae60;
+    color: white;;
+  }
+  
+  .sales-table tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
