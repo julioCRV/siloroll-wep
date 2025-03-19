@@ -79,7 +79,7 @@ const Almacenes = () => {
 
   return (
     <div className="almacenes-container">
-      <h2 className="almacenes-title">Lista de Almacenes</h2>
+      <h2 className="almacenes-title">Lista de Almacenes </h2>
       <table className="almacenes-table">
         <thead>
           <tr>
