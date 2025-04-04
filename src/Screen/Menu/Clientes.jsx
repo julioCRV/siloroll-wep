@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./Clientes.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const initialClients = [
   { id: 1, name: "Carlos", surname: "Fernández", property: "Estancia La Esperanza", zone: "Norte", activity: "Ganadería", phone: "78945612" },
@@ -8,6 +10,7 @@ const initialClients = [
 ];
 
 const Clientes = () => {
+  const navigate = useNavigate();
   const [clients, setClients] = useState(initialClients);
   const [modalType, setModalType] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
@@ -59,6 +62,10 @@ const Clientes = () => {
 
   return (
     <div className="clientes-container">
+      <FaArrowLeft
+        className="arrow-icon"
+        onClick={() => navigate('/menu')}
+      />
       <h2 className="clientes-title">Lista de Clientes</h2>
       <table className="clientes-table">
         <thead>

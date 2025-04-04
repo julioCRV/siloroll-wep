@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./Transportistas.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const initialDrivers = [
   { id: 1, name: "Carlos", surname: "Fernández", plate: "ABC-123", phone: "78945612" },
@@ -8,6 +10,7 @@ const initialDrivers = [
 ];
 
 const Transportistas = () => {
+  const navigate = useNavigate();
   const [drivers, setDrivers] = useState(initialDrivers);
   const [modalType, setModalType] = useState(null);
   const [selectedDriver, setSelectedDriver] = useState(null);
@@ -59,6 +62,10 @@ const Transportistas = () => {
 
   return (
     <div className="transportistas-container">
+      <FaArrowLeft
+        className="arrow-icon"
+        onClick={() => navigate('/menu')}
+      />
       <h2 className="transportistas-title">Lista de Transportistas</h2>
       <table className="transportistas-table">
         <thead>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import './App.css';
 
 // - - - - - - - - - - -  R U T A S - - - - - - - - - - -
 import IniciarSesion from './Screen/IniciarSesion';

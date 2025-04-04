@@ -1,11 +1,12 @@
 import React from "react";
 import { Bar } from "react-chartjs-2";
-
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js"; 
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import "./Panel.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
-// 🔹 Registrar los módulos necesarios de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 // Datos de ventas por mes (Ejemplo)
 const salesData = {
   labels: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio"],
@@ -28,8 +29,15 @@ const salesTable = [
 ];
 
 const Panel = () => {
+
+  const navigate = useNavigate();
+  
   return (
     <div className="panel-container">
+      <FaArrowLeft
+        className="arrow-icon"
+        onClick={() => navigate('/menu')}
+      />
       <h2 className="panel-title"> Panel de Ventas</h2>
 
       {/* GRÁFICO DE BARRAS */}

@@ -1,13 +1,25 @@
 import React, { useState } from "react";
 import "./Productos.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const initialProducts = [
   { id: 1, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
   { id: 2, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
   { id: 3, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
+  { id: 4, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
+  { id: 5, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
+  { id: 6, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
+  { id: 7, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
+  { id: 8, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
+  { id: 9, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
+  { id: 10, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
+  { id: 11, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
+  { id: 12, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
 ];
 
 const Productos = () => {
+  const navigate = useNavigate();
   const [products, setProducts] = useState(initialProducts);
   const [modalType, setModalType] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -59,7 +71,12 @@ const Productos = () => {
 
   return (
     <div className="productos-container">
+      <FaArrowLeft
+        className="arrow-icon"
+        onClick={() => navigate('/menu')}
+      />
       <h2 className="productos-title">Lista de Productos</h2>
+      <button className="btn-registrar" onClick={handleRegister}>➕ Registrar Producto</button>
       <table className="productos-table">
         <thead>
           <tr>
@@ -82,7 +99,7 @@ const Productos = () => {
           ))}
         </tbody>
       </table>
-      <button className="btn-registrar" onClick={handleRegister}>➕ Registrar Producto</button>
+
 
       {/* MODALES */}
       {modalType && (

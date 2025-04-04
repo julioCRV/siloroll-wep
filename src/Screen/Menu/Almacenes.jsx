@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./Almacenes.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const initialWarehouses = [
   { id: 1, name: "Almacén Central", address: "Av. Industrial 456", products: [] },
@@ -7,6 +9,7 @@ const initialWarehouses = [
 ];
 
 const Almacenes = () => {
+  const navigate = useNavigate();
   const [warehouses, setWarehouses] = useState(initialWarehouses);
   const [modalType, setModalType] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
@@ -79,6 +82,10 @@ const Almacenes = () => {
 
   return (
     <div className="almacenes-container">
+      <FaArrowLeft
+        className="arrow-icon"
+        onClick={() => navigate('/menu')}
+      />
       <h2 className="almacenes-title">Lista de Almacenes </h2>
       <table className="almacenes-table">
         <thead>
