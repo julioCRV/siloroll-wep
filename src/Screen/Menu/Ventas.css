@@ -1,0 +1,94 @@
+.ventas-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ventas-form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+  }
+  
+  .ventas-form label {
+    display: block;
+    margin: 10px 0 5px;
+  }
+  
+  .ventas-form select,
+  .ventas-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  .ventas-form button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .ventas-form button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  
+  .modal-content button {
+    margin-top: 10px;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .modal-content button:first-child {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .modal-content button:last-child {
+    background-color: #f44336;
+    color: white;
+  }
+  
+  .ventas-table {
+    margin-top: 20px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .ventas-table th,
+  .ventas-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  

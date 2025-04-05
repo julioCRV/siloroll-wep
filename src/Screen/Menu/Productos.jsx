@@ -1,29 +1,29 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Productos.css";
 import { FaArrowLeft } from "react-icons/fa";
+import { FaUpload } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
-const initialProducts = [
-  { id: 1, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
-  { id: 2, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
-  { id: 3, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
-  { id: 4, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
-  { id: 5, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
-  { id: 6, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
-  { id: 7, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
-  { id: 8, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
-  { id: 9, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
-  { id: 10, name: "Ensilaje de Maíz", price: 550, description: "Alimento rico en fibra y nutrientes esenciales." },
-  { id: 11, name: "Heno de Alfalfa", price: 720, description: "Fuente de proteína y energía para el ganado." },
-  { id: 12, name: "Concentrado Proteico", price: 1300, description: "Mezcla optimizada para un mejor crecimiento." },
-];
 
 const Productos = () => {
   const navigate = useNavigate();
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
   const [modalType, setModalType] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [form, setForm] = useState({ name: "", description: "", price: "" });
+  const [form, setForm] = useState({ name: "", description: "", price: "", photo: "" });
+
+  useEffect(() => {
+    fetch('/api/product/get_products')
+      .then(res => res.json())
+      .then(data => {
+        const productosConvertidos = data.map(producto => ({
+          ...producto,
+          price: parseFloat(producto.price.replace('$', ''))
+        }));
+        setProducts(productosConvertidos);
+      })
+      .catch(console.error);
+  }, []);
+
 
   const handleView = (product) => {
     setSelectedProduct(product);
@@ -36,8 +36,9 @@ const Productos = () => {
     setModalType("edit");
   };
 
+
   const handleRegister = () => {
-    setForm({ name: "", description: "", price: "" });
+    setForm({ name: "", description: "", price: "", photo: "" });
     setModalType("register");
   };
 
@@ -47,15 +48,91 @@ const Productos = () => {
   };
 
   const handleDeleteConfirm = () => {
-    setProducts(products.filter((product) => product.id !== selectedProduct.id));
+    setProducts(products.filter((product) => product.code !== selectedProduct.code));
+    // Hacer fetch al backend para editar el producto
+    fetch('/api/product/delete_product', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        code: selectedProduct.code,
+      })
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Error al eliminar el producto');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log("Producto eliminado:", data);
+        // Aquí podrías actualizar la lista de productos si deseas
+      })
+      .catch(error => {
+        console.error("Error:", error.message);
+      });
     closeModal();
   };
 
   const handleSave = () => {
     if (modalType === "edit") {
-      setProducts(products.map((p) => (p.id === selectedProduct.id ? { ...form, id: p.id } : p)));
+      setProducts(products.map((p) => (p.code === selectedProduct.code ? { ...form, code: p.code } : p)));
+      // Hacer fetch al backend para editar el producto
+      fetch('/api/product/edit_product', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          code: form.code,
+          name: form.name,
+          description: form.description,
+          price: parseFloat(form.price), // Asegura que sea número
+          photo: form.photo
+        })
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Error al editar el producto');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log("Producto editado:", data);
+        })
+        .catch(error => {
+          console.error("Error:", error.message);
+        });
     } else if (modalType === "register") {
-      setProducts([...products, { ...form, id: products.length + 1 }]);
+      setProducts([...products, { ...form }]);
+
+      console.log(form)
+      // Hacer fetch al backend para registrar el producto
+      fetch('/api/product/register_product', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: form.name,
+          description: form.description,
+          price: parseFloat(form.price), // Asegura que sea número
+          photo: form.photo
+        })
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Error al egregar el producto');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log("Producto agregado:", data);
+        })
+        .catch(error => {
+          console.error("Error:", error.message);
+        });
     }
     closeModal();
   };
@@ -87,7 +164,7 @@ const Productos = () => {
         </thead>
         <tbody>
           {products.map((product) => (
-            <tr key={product.id}>
+            <tr key={product.code}>
               <td>{product.name}</td>
               <td>{product.price.toLocaleString("es-BO")}</td>
               <td>
@@ -128,6 +205,15 @@ const Productos = () => {
 
                 <label>Precio (Bs):</label>
                 <input type="number" name="price" value={form.price} onChange={handleChange} />
+
+                {/* <label >Imagen</label>
+                <input
+                  id="photo-upload"
+                  name="photo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleChange}
+                /> */}
 
                 <button className="btn-save" onClick={handleSave}>
                   {modalType === "edit" ? "Guardar Cambios" : "Registrar"}

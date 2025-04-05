@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import salirIcon from '/logOut.svg';
 import "./Menu.css";
 
 const menuItems = [
@@ -11,9 +12,20 @@ const menuItems = [
     { title: "Almacenes", icon: "🏢", link: "/almacenes" },
 ];
 
-const Menu = () => {
+const Menu = ({ CerrarSesion }) => {
+    const onLogout = () => {
+        CerrarSesion(null)
+    }
+
     return (
         <div className="menu-container">
+            <div className="div-button">
+                <button className="logout-button" onClick={onLogout}>
+                    <img src={salirIcon} alt="Icono salir" className="logout-icon" />
+                    Cerrar Sesión
+                </button>
+            </div>
+
             <h2 className="menu-title">Menú SiloRoll</h2>
             <div className="menu-grid">
                 {menuItems.map((item, index) => (

@@ -27,18 +27,21 @@ body {
   margin: 0;
   place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  // min-height: 100vh;
   justify-content: center;
   align-items: center;
   height: 100vh;
   margin: 0;
   font-family: "Arial", sans-serif;
-
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+p {
+  color: #1a1a1a;
 }
 
 button {
@@ -48,7 +51,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #ff1c1c;
   cursor: pointer;
   transition: border-color 0.25s;
 }

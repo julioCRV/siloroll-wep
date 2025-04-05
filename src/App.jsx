@@ -12,20 +12,44 @@ import Transportistas from './Screen/Menu/Transportistas';
 import Ventas from './Screen/Menu/Ventas';
 
 const App = () => {
+  const [id, setId] = useState(localStorage.getItem('idusuario'));
+
+  useEffect(() => {
+    setId(localStorage.getItem('idusuario'));
+  }, [id]);
+
+  const login = (userData) => {
+    setId(userData)
+  };
+
+  const CerrarSesion = (userData) => {
+    setId(null)
+    localStorage.removeItem('idusuario');
+  };
+
 
   return (
     <div className="App">
-      <Routes>
-        <Route path="/" element={<IniciarSesion />} />
-        <Route path='/menu' element={<Menu />} />
-        <Route path='/almacenes' element={<Almacenes />} />
-        <Route path='/clientes' element={< Clientes />} />
-        <Route path='/panel' element={<Panel />} />
-        <Route path='/productos' element={< Productos />} />
-        <Route path='/transportistas' element={< Transportistas />} />
-        <Route path='/ventas' element={<Ventas />} />
-        <Route path="*" element={<IniciarSesion />} />
-      </Routes>
+      {id === null ? (
+        <>
+          <Routes>
+            <Route path="/" element={<IniciarSesion login={login} />} />
+            <Route path='*' element={<Navigate to="/"></Navigate>} />
+          </Routes>
+        </>
+      ) : (
+        <Routes>
+          <Route path="/" element={<Menu CerrarSesion={CerrarSesion} />} />
+   
+          <Route path='/almacenes' element={<Almacenes />} />
+          <Route path='/clientes' element={< Clientes />} />
+          <Route path='/panel' element={<Panel />} />
+          <Route path='/productos' element={< Productos />} />
+          <Route path='/transportistas' element={< Transportistas />} />
+          <Route path='/ventas' element={<Ventas />} />
+          <Route path="*" element={<Menu CerrarSesion={CerrarSesion} />} />
+        </Routes>
+      )}
     </div>
   );
 };
