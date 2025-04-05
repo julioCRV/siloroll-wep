@@ -32,6 +32,7 @@ const Clientes = () => {
     setModalType("register");
   };
 
+  //  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /  /
   const handleDeleteRequest = (client) => {
     setSelectedClient(client);
     setModalType("delete");
@@ -47,6 +48,35 @@ const Clientes = () => {
       setClients(clients.map((c) => (c.id === selectedClient.id ? { ...form, id: c.id } : c)));
     } else if (modalType === "register") {
       setClients([...clients, { ...form, id: clients.length + 1 }]);
+console.log(form)
+      // Hacer fetch al backend para registrar el producto
+      fetch('/api/customer/register_customer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: form.name,
+          last_name: form.surname,
+          property: form.property,
+          zone: form.zone,
+          activity: form.activity,
+          phone: form.phone
+        })
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Error al egregar el cliente');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log("Cliente agregado:", data);
+          closeModal();
+        })
+        .catch(error => {
+          console.error("Error:", error.message);
+        });
     }
     closeModal();
   };

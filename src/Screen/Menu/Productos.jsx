@@ -107,7 +107,6 @@ const Productos = () => {
     } else if (modalType === "register") {
       setProducts([...products, { ...form }]);
 
-      console.log(form)
       // Hacer fetch al backend para registrar el producto
       fetch('/api/product/register_product', {
         method: 'POST',

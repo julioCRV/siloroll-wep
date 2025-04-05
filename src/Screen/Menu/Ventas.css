@@ -1,14 +1,19 @@
 .ventas-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
-    background: #f9f9f9;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  min-height: 100vh;
+  /* Asegura que el contenedor tenga al menos la altura de la pantalla */
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: flex-start;
+  /* Mantiene el contenido arriba */
+  padding: 20px;
+  box-sizing: border-box;
+  // border: 4px solid #4caf50
   }
   
   .ventas-form {
-    background: white;
+    width: 780px;
     padding: 20px;
     border-radius: 10px;
   }
@@ -25,22 +30,32 @@
     margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    background-color: #4caf50;
+    color: white;
   }
   
   .ventas-form button {
-    width: 100%;
+    width: 30%;
     padding: 10px;
-    background-color: #4caf50;
+    background-color: #109b71;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+    border: 1px solid white;
   }
   
   .ventas-form button:disabled {
     background-color: #ccc;
     cursor: not-allowed;
   }
+
+  .boton-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
   
   .modal {
     position: fixed;
@@ -69,20 +84,22 @@
     cursor: pointer;
   }
   
-  .modal-content button:first-child {
+  .modal-content button:nth-of-type(1) {
     background-color: #4caf50;
     color: white;
   }
   
-  .modal-content button:last-child {
+  .modal-content button:nth-of-type(2) {
     background-color: #f44336;
     color: white;
-  }
+  }  
   
   .ventas-table {
     margin-top: 20px;
     width: 100%;
     border-collapse: collapse;
+    background-color: white;
+    color: black;
   }
   
   .ventas-table th,
@@ -91,4 +108,16 @@
     border: 1px solid #ddd;
     text-align: center;
   }
+
+  .form-grid {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax( 200px, 1fr));
+  }
+  
+  .form-item {
+    display: flex;
+    flex-direction: column;
+  }
+  
   

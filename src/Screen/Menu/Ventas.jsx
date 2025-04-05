@@ -1,7 +1,10 @@
 import React, { useState } from "react";
 import "./Ventas.css";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const VentasSiloroll = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     cliente: "",
     producto: "",
@@ -47,74 +50,92 @@ const VentasSiloroll = () => {
 
   return (
     <div className="ventas-container">
-      <h2>Registrar Venta</h2>
+      <FaArrowLeft
+        className="arrow-icon"
+        onClick={() => navigate('/menu')}
+      />
+      <h2 className="productos-title">Registrar ventas</h2>
+
       <form className="ventas-form">
-        <label>Cliente</label>
-        <select
-          value={formData.cliente}
-          onChange={(e) => handleChange("cliente", e.target.value)}
-        >
-          <option value="">Seleccionar Cliente</option>
-          {opcionesClientes.map((cliente, index) => (
-            <option key={index} value={cliente}>
-              {cliente}
-            </option>
-          ))}
-        </select>
+        <div className="form-grid">
+          {/* Cliente */}
+          <div className="form-item">
+            <label>Cliente</label>
+            <select
+              value={formData.cliente}
+              onChange={(e) => handleChange("cliente", e.target.value)}
+            >
+              <option value="">Seleccionar Cliente</option>
+              {opcionesClientes.map((cliente, index) => (
+                <option key={index} value={cliente}>{cliente}</option>
+              ))}
+            </select>
+          </div>
 
-        <label>Producto</label>
-        <select
-          value={formData.producto}
-          onChange={(e) => handleChange("producto", e.target.value)}
-        >
-          <option value="">Seleccionar Producto</option>
-          {opcionesProductos.map((producto, index) => (
-            <option key={index} value={producto}>
-              {producto}
-            </option>
-          ))}
-        </select>
+          {/* Producto */}
+          <div className="form-item">
+            <label>Producto</label>
+            <select
+              value={formData.producto}
+              onChange={(e) => handleChange("producto", e.target.value)}
+            >
+              <option value="">Seleccionar Producto</option>
+              {opcionesProductos.map((producto, index) => (
+                <option key={index} value={producto}>{producto}</option>
+              ))}
+            </select>
+          </div>
 
-        <label>Cantidad</label>
-        <input
-          type="number"
-          value={formData.cantidad}
-          onChange={(e) => handleChange("cantidad", e.target.value)}
-        />
+          {/* Cantidad */}
+          <div className="form-item">
+            <label>Cantidad</label>
+            <input
+              type="number"
+              value={formData.cantidad}
+              onChange={(e) => handleChange("cantidad", e.target.value)}
+            />
+          </div>
 
-        <label>Toneladas</label>
-        <input
-          type="number"
-          value={formData.toneladas}
-          onChange={(e) => handleChange("toneladas", e.target.value)}
-        />
+          {/* Toneladas */}
+          <div className="form-item">
+            <label>Toneladas</label>
+            <input
+              type="number"
+              value={formData.toneladas}
+              onChange={(e) => handleChange("toneladas", e.target.value)}
+            />
+          </div>
 
-        <label>Almacén</label>
-        <select
-          value={formData.almacen}
-          onChange={(e) => handleChange("almacen", e.target.value)}
-        >
-          <option value="">Seleccionar Almacén</option>
-          {opcionesAlmacen.map((almacen, index) => (
-            <option key={index} value={almacen}>
-              {almacen}
-            </option>
-          ))}
-        </select>
+          {/* Almacén */}
+          <div className="form-item">
+            <label>Almacén</label>
+            <select
+              value={formData.almacen}
+              onChange={(e) => handleChange("almacen", e.target.value)}
+            >
+              <option value="">Seleccionar Almacén</option>
+              {opcionesAlmacen.map((almacen, index) => (
+                <option key={index} value={almacen}>{almacen}</option>
+              ))}
+            </select>
+          </div>
 
-        <label>Transportista</label>
-        <select
-          value={formData.transportista}
-          onChange={(e) => handleChange("transportista", e.target.value)}
-        >
-          <option value="">Seleccionar Transportista</option>
-          {opcionesTransportistas.map((transportista, index) => (
-            <option key={index} value={transportista}>
-              {transportista}
-            </option>
-          ))}
-        </select>
+          {/* Transportista */}
+          <div className="form-item">
+            <label>Transportista</label>
+            <select
+              value={formData.transportista}
+              onChange={(e) => handleChange("transportista", e.target.value)}
+            >
+              <option value="">Seleccionar Transportista</option>
+              {opcionesTransportistas.map((transportista, index) => (
+                <option key={index} value={transportista}>{transportista}</option>
+              ))}
+            </select>
+          </div>
+        </div>
 
+        <div className="boton-container">
         <button
           type="button"
           onClick={handleSell}
@@ -122,7 +143,9 @@ const VentasSiloroll = () => {
         >
           Vender
         </button>
+        </div>
       </form>
+
 
       {isModalVisible && (
         <div className="modal">
