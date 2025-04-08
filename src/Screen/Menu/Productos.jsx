@@ -49,6 +49,7 @@ const Productos = () => {
 
   const handleDeleteConfirm = () => {
     setProducts(products.filter((product) => product.code !== selectedProduct.code));
+    
     // Hacer fetch al backend para eliminar el producto
     fetch('/api/product/delete_product', {
       method: 'PUT',
@@ -77,6 +78,7 @@ const Productos = () => {
   const handleSave = () => {
     if (modalType === "edit") {
       setProducts(products.map((p) => (p.code === selectedProduct.code ? { ...form, code: p.code } : p)));
+
       // Hacer fetch al backend para editar el producto
       fetch('/api/product/edit_product', {
         method: 'PUT',

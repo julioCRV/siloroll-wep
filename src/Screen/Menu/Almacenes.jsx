@@ -169,7 +169,7 @@ const Almacenes = () => {
   const handleProductChange = (e) => {
     setProductForm({ ...productForm, [e.target.name]: e.target.value });
   };
-console.log(selectedWarehouse)
+
   return (
     <div className="almacenes-container">
       <FaArrowLeft

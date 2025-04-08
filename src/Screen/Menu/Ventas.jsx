@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Ventas.css";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -13,16 +13,125 @@ const VentasSiloroll = () => {
     almacen: "",
     transportista: "",
   });
+
+  const [formDataPost, setFormDataPost] = useState({
+    cliente: "",
+    producto: "",
+    cantidad: "",
+    toneladas: "",
+    almacen: "",
+    transportista: "",
+    precio: "",
+  });
+
   const [ventas, setVentas] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const opcionesClientes = ["Cliente A", "Cliente B", "Cliente C"];
-  const opcionesProductos = ["Maíz", "Soja", "Trigo"];
-  const opcionesAlmacen = ["Depósito 1", "Depósito 2"];
-  const opcionesTransportistas = ["Transp. X", "Transp. Y"];
+  const [opcionesClientes, setOpcionesClientes] = useState([]);
+  const [opcionesProductos, setOpcionesProductos] = useState([]);
+  const [opcionesAlmacen, setOpcionesAlmacen] = useState([]);
+  const [opcionesTransportistas, setOpcionesTransportistas] = useState([]);
+
+  const cargarVentas = () => {
+    fetch('/api/sale/get_sales')
+      .then(res => res.json())
+      .then(data => {
+        setVentas(data);
+      })
+      .catch(console.error);
+  };
+
+  useEffect(() => {
+    cargarVentas();
+  }, []);
+
+
+  useEffect(() => {
+    fetch('/api/product/get_products')
+      .then(res => res.json())
+      .then(data => {
+        const productosConvertidos = data.map(producto => ({
+          ...producto,
+          price: parseFloat(producto.price.replace('$', ''))
+        }));
+        setOpcionesProductos(productosConvertidos);
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/customer/get_customers')
+      .then(res => res.json())
+      .then(data => {
+        setOpcionesClientes(data);
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/warehouse/get_warehouses')
+      .then(res => res.json())
+      .then(data => {
+        setOpcionesAlmacen(data);
+      })
+      .catch(console.error);
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/carrier/get_carriers')
+      .then(res => res.json())
+      .then(drivers => {
+        const formattedDrivers = drivers.map(([code, name, last_name]) => ({
+          code,
+          name: name.trim(),
+          last_name: last_name.trim()
+        }));
+        setOpcionesTransportistas(formattedDrivers);
+      })
+      .catch(console.error);
+  }, []);
 
   const handleChange = (key, value) => {
-    setFormData({ ...formData, [key]: value });
+    setFormDataPost(prev => ({ ...prev, [key]: value }));
+
+    // Elegir la lista correspondiente según el key
+    let lista = [];
+
+    switch (key) {
+      case 'cliente':
+        lista = opcionesClientes;
+        break;
+      case 'producto':
+        lista = opcionesProductos;
+        break;
+      case 'almacen':
+        lista = opcionesAlmacen;
+        break;
+      case 'transportista':
+        lista = opcionesTransportistas;
+        break;
+      default:
+        break;
+    }
+
+    // Buscar el objeto con el mismo code
+    const seleccionado = lista.find(item => item.code === parseInt(value));
+    if (key === 'producto') {
+      setFormDataPost(prev => ({ ...prev, 'precio': seleccionado.price }));
+    }
+
+    if (seleccionado) {
+      const nombreCompleto = `${seleccionado.name}${seleccionado.last_name ? ' ' + seleccionado.last_name : ''}`;
+      setFormData(prev => ({
+        ...prev,
+        [key]: nombreCompleto
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [key]: value
+      }));
+    }
   };
 
   const handleSell = () => {
@@ -30,13 +139,19 @@ const VentasSiloroll = () => {
   };
 
   const confirmSell = () => {
+    sendPostSale();
     const newVenta = {
       cliente: formData.cliente,
       producto: formData.producto,
       cantidad: formData.cantidad,
-      costo: parseInt(formData.cantidad) * 100, // Precio ficticio por unidad
+      costo: parseInt(formData.cantidad) * formDataPost.precio,
     };
-    setVentas([...ventas, newVenta]);
+
+    setTimeout(() => {
+      cargarVentas();
+    }, 300);
+
+    // setVentas([...ventas, newVenta]);
     setIsModalVisible(false);
     setFormData({
       cliente: "",
@@ -47,6 +162,39 @@ const VentasSiloroll = () => {
       transportista: "",
     });
   };
+
+  const sendPostSale = () => {
+
+    // Hacer fetch al backend para registar una venta
+    fetch('/api/sale/make_sale', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        product_code: formDataPost.producto,
+        carrier_code: formDataPost.transportista,
+        customer_code: formDataPost.cliente,
+        warehouse_code: formDataPost.almacen,
+        amount: formDataPost.cantidad,
+        ton: formDataPost.toneladas,
+        price: formDataPost.precio * formDataPost.cantidad
+      })
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Error al realizar la venta');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log("Venta agregada:", data);
+      })
+      .catch(error => {
+        console.error("Error:", error.message);
+      });
+  }
+
 
   return (
     <div className="ventas-container">
@@ -62,12 +210,12 @@ const VentasSiloroll = () => {
           <div className="form-item">
             <label>Cliente</label>
             <select
-              value={formData.cliente}
+              value={formData.cliente.code}
               onChange={(e) => handleChange("cliente", e.target.value)}
             >
               <option value="">Seleccionar Cliente</option>
               {opcionesClientes.map((cliente, index) => (
-                <option key={index} value={cliente}>{cliente}</option>
+                <option key={index} value={cliente.code}>{cliente.name} {cliente.last_name}</option>
               ))}
             </select>
           </div>
@@ -76,12 +224,12 @@ const VentasSiloroll = () => {
           <div className="form-item">
             <label>Producto</label>
             <select
-              value={formData.producto}
+              value={formData.producto.code}
               onChange={(e) => handleChange("producto", e.target.value)}
             >
               <option value="">Seleccionar Producto</option>
               {opcionesProductos.map((producto, index) => (
-                <option key={index} value={producto}>{producto}</option>
+                <option key={index} value={producto.code}>{producto.name}</option>
               ))}
             </select>
           </div>
@@ -110,12 +258,12 @@ const VentasSiloroll = () => {
           <div className="form-item">
             <label>Almacén</label>
             <select
-              value={formData.almacen}
+              value={formData.almacen.code}
               onChange={(e) => handleChange("almacen", e.target.value)}
             >
               <option value="">Seleccionar Almacén</option>
               {opcionesAlmacen.map((almacen, index) => (
-                <option key={index} value={almacen}>{almacen}</option>
+                <option key={index} value={almacen.code}>{almacen.name}</option>
               ))}
             </select>
           </div>
@@ -124,25 +272,25 @@ const VentasSiloroll = () => {
           <div className="form-item">
             <label>Transportista</label>
             <select
-              value={formData.transportista}
+              value={formData.transportista.code}
               onChange={(e) => handleChange("transportista", e.target.value)}
             >
               <option value="">Seleccionar Transportista</option>
               {opcionesTransportistas.map((transportista, index) => (
-                <option key={index} value={transportista}>{transportista}</option>
+                <option key={index} value={transportista.code}>{transportista.name} {transportista.last_name}</option>
               ))}
             </select>
           </div>
         </div>
 
         <div className="boton-container">
-        <button
-          type="button"
-          onClick={handleSell}
-          disabled={!Object.values(formData).every((val) => val !== "")}
-        >
-          Vender
-        </button>
+          <button
+            type="button"
+            onClick={handleSell}
+            disabled={!Object.values(formData).every((val) => val !== "")}
+          >
+            Vender
+          </button>
         </div>
       </form>
 
@@ -169,17 +317,21 @@ const VentasSiloroll = () => {
           <tr>
             <th>Cliente</th>
             <th>Producto</th>
-            <th>Cantidad</th>
-            <th>Costo</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Transportista</th>
+            <th>Almacen</th>
           </tr>
         </thead>
         <tbody>
-          {ventas.map((venta, index) => (
-            <tr key={index}>
-              <td>{venta.cliente}</td>
-              <td>{venta.producto}</td>
-              <td>{venta.cantidad}</td>
-              <td>{venta.costo}</td>
+          {ventas.map((venta, amount) => (
+            <tr key={amount}>
+              <td>{venta.customer_name}</td>
+              <td>{venta.product}</td>
+              <td>{venta.sale_date}</td>
+              <td>{venta.sale_time}</td>
+              <td>{venta.carrier_name}</td>
+              <td>{venta.warehouse}</td>
             </tr>
           ))}
         </tbody>

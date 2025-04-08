@@ -180,7 +180,7 @@ const Transportistas = () => {
         </thead>
         <tbody>
           {drivers.map((driver) => (
-            <tr key={driver.id}>
+            <tr key={driver.code}>
               <td>{driver.name} {driver.last_name}</td>
               <td>
                 <button className="btn btn-view" onClick={() => handleView(driver)}>👁 Ver</button>
