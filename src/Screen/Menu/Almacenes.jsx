@@ -6,10 +6,24 @@ import { useNavigate } from "react-router-dom";
 const Almacenes = () => {
   const navigate = useNavigate();
   const [warehouses, setWarehouses] = useState([]);
+  const [products, setProducts] = useState([]);
   const [modalType, setModalType] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
   const [form, setForm] = useState({ name: "", direction: "" });
   const [productForm, setProductForm] = useState({ name: "", description: "", price: "" });
+
+  useEffect(() => {
+    fetch('/api/product/get_products')
+      .then(res => res.json())
+      .then(data => {
+        const productosConvertidos = data.map(producto => ({
+          ...producto,
+          price: parseFloat(producto.price.replace('$', ''))
+        }));
+        setProducts(productosConvertidos);
+      })
+      .catch(console.error);
+  }, []);
 
   useEffect(() => {
     fetch('/api/warehouse/get_warehouses')
@@ -145,12 +159,38 @@ const Almacenes = () => {
     setSelectedWarehouse(warehouse);
     setProductForm({ name: "", description: "", price: "" });
     setModalType("addProduct");
+
   };
 
-  const handleSaveProduct = () => {
+  const handleSaveProduct = (product) => {
+    // Hacer fetch al backend para registrar el producto
+    fetch('/api/warehouse/assign_warehouse', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        code_warehouse: selectedWarehouse.code,
+        code_product: product.code
+      })
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Error al egregar el producto');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log("Producto agregado:", data);
+        actualizarProductos();
+      })
+      .catch(error => {
+        console.error("Error:", error.message);
+      });
+
     const updatedWarehouses = warehouses.map((w) =>
-      w.id === selectedWarehouse.id
-        ? { ...w, products: [...w.products, { ...productForm, id: w.products.length + 1 }] }
+      w.code === selectedWarehouse.code
+        ? { ...w, products: [...w.products, { ...product }] }
         : w
     );
     setWarehouses(updatedWarehouses);
@@ -168,6 +208,19 @@ const Almacenes = () => {
 
   const handleProductChange = (e) => {
     setProductForm({ ...productForm, [e.target.name]: e.target.value });
+  };
+
+  const actualizarProductos = () => {
+    fetch('/api/product/get_products') // Solicitar los productos nuevamente
+      .then(res => res.json())
+      .then(data => {
+        const productosConvertidos = data.map(producto => ({
+          ...producto,
+          price: parseFloat(producto.price.replace('$', '')) // Convertir precio a número
+        }));
+        setProducts(productosConvertidos); // Actualizar el estado
+      })
+      .catch(console.error);
   };
 
   return (
@@ -190,7 +243,7 @@ const Almacenes = () => {
             <tr key={warehouse.code}>
               <td>{warehouse.name}</td>
               <td>
-                <button className="btn btn-add" onClick={() => handleAddProduct(warehouse)}>➕ Agregar Producto</button>
+                <button className="btn btn-add" onClick={() => handleAddProduct(warehouse)}>➕ Asignar Producto</button>
                 <button className="btn btn-view" onClick={() => handleView(warehouse)}>👁 Ver</button>
                 <button className="btn btn-edit" onClick={() => handleEdit(warehouse)}>✏ Editar</button>
                 <button className="btn btn-delete" onClick={() => handleDeleteRequest(warehouse)}>🗑 Eliminar</button>
@@ -243,19 +296,37 @@ const Almacenes = () => {
             {/* MODAL AGREGAR PRODUCTO */}
             {modalType === "addProduct" && (
               <>
-                <h3>Agregar Producto a {selectedWarehouse.name}</h3>
-                <label>Nombre del Producto:</label>
-                <input type="text" name="name" value={productForm.name} onChange={handleProductChange} />
-
-                <label>Descripción:</label>
-                <input type="text" name="description" value={productForm.description} onChange={handleProductChange} />
-
-                <label>Precio:</label>
-                <input type="number" name="price" value={productForm.price} onChange={handleProductChange} />
-
-                <button className="btn-save" onClick={handleSaveProduct}>Guardar Producto</button>
+                <h3>Asignar Producto a {selectedWarehouse.name}</h3>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nombre</th>
+                      <th>Descripción</th>
+                      <th>Precio</th>
+                      <th>Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product) => (
+                      <tr key={product.code}>
+                        <td>{product.name}</td>
+                        <td>{product.description}</td>
+                        <td>{product.price}</td>
+                        <td>
+                          <button
+                            className="btn-assign"
+                            onClick={() => handleSaveProduct(product)}
+                          >
+                            Asignar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </>
             )}
+
 
             {/* MODAL ELIMINAR */}
             {modalType === "delete" && (
