@@ -11,12 +11,12 @@ const Clientes = () => {
   const [form, setForm] = useState({ name: "", last_name: "", property: "", zone: "", activity: "", phone: "" });
 
   useEffect(() => {
-    fetch('/api/customer/get_customers')
+    fetch('https://silo-roll-backend.onrender.com/customer/get_customers')
       .then(res => res.json())
       .then(async (clientes) => {
         const clientesCompletos = await Promise.all(
           clientes.map(async (cliente) => {
-            const res = await fetch('/api/customer/get_customer', {
+            const res = await fetch('https://silo-roll-backend.onrender.com/customer/get_customer', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const Clientes = () => {
     setClients(clients.filter((client) => client.code !== selectedClient.code));
 
     // Hacer fetch al backend para eliminar cliente
-    fetch('/api/customer/delete_customer', {
+    fetch('https://silo-roll-backend.onrender.com/customer/delete_customer', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -87,7 +87,7 @@ const Clientes = () => {
       setClients(clients.map((c) => (c.code === selectedClient.code ? { ...form, code: c.code } : c)));
       console.log(form)
       // Hacer fetch al backend para editar el cliente
-      fetch('/api/customer/edit_customer', {
+      fetch('https://silo-roll-backend.onrender.com/customer/edit_customer', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ const Clientes = () => {
       setClients([...clients, { ...form, id: clients.length + 1 }]);
       
       // Hacer fetch al backend para registrar el producto
-      fetch('/api/customer/register_customer', {
+      fetch('https://silo-roll-backend.onrender.com/customer/register_customer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

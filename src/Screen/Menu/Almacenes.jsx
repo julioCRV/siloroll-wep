@@ -13,7 +13,7 @@ const Almacenes = () => {
   const [productForm, setProductForm] = useState({ name: "", description: "", price: "" });
 
   useEffect(() => {
-    fetch('/api/product/get_products')
+    fetch('https://silo-roll-backend.onrender.com/product/get_products')
       .then(res => res.json())
       .then(data => {
         const productosConvertidos = data.map(producto => ({
@@ -26,12 +26,12 @@ const Almacenes = () => {
   }, []);
 
   useEffect(() => {
-    fetch('/api/warehouse/get_warehouses')
+    fetch('https://silo-roll-backend.onrender.com/warehouse/get_warehouses')
       .then(res => res.json())
       .then(async (almacenes) => {
         const almacenesCompletos = await Promise.all(
           almacenes.map(async (almacen) => {
-            const res = await fetch('/api/warehouse/get_warehouse', {
+            const res = await fetch('https://silo-roll-backend.onrender.com/warehouse/get_warehouse', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ const Almacenes = () => {
     setWarehouses(warehouses.filter((w) => w.code !== selectedWarehouse.code));
 
     // Hacer fetch al backend para eliminar el almacen
-    fetch('/api/warehouse/delete_warehouse', {
+    fetch('https://silo-roll-backend.onrender.com/warehouse/delete_warehouse', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -102,7 +102,7 @@ const Almacenes = () => {
       setWarehouses(warehouses.map((w) => (w.code === selectedWarehouse.code ? { ...form, code: w.code } : w)));
 
       // Hacer fetch al backend para editar el almacen
-      fetch('/api/warehouse/edit_warehouse', {
+      fetch('https://silo-roll-backend.onrender.com/warehouse/edit_warehouse', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -129,7 +129,7 @@ const Almacenes = () => {
       setWarehouses([...warehouses, { ...form }]);
 
       // Hacer fetch al backend para registrar el almacen
-      fetch('/api/warehouse/register_warehouse', {
+      fetch('https://silo-roll-backend.onrender.com/warehouse/register_warehouse', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -164,7 +164,7 @@ const Almacenes = () => {
 
   const handleSaveProduct = (product) => {
     // Hacer fetch al backend para registrar el producto
-    fetch('/api/warehouse/assign_warehouse', {
+    fetch('https://silo-roll-backend.onrender.com/warehouse/assign_warehouse', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -211,7 +211,7 @@ const Almacenes = () => {
   };
 
   const actualizarProductos = () => {
-    fetch('/api/product/get_products') // Solicitar los productos nuevamente
+    fetch('https://silo-roll-backend.onrender.com/product/get_products') // Solicitar los productos nuevamente
       .then(res => res.json())
       .then(data => {
         const productosConvertidos = data.map(producto => ({

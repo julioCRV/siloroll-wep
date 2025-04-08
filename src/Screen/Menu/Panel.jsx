@@ -41,7 +41,7 @@ const salesData = {
   ],
 };
   useEffect(() => {
-    fetch('/api/dashboard/get_dates', {
+    fetch('https://silo-roll-backend.onrender.com/dashboard/get_dates', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -33,7 +33,7 @@ const VentasSiloroll = () => {
   const [opcionesTransportistas, setOpcionesTransportistas] = useState([]);
 
   const cargarVentas = () => {
-    fetch('/api/sale/get_sales')
+    fetch('https://silo-roll-backend.onrender.com/sale/get_sales')
       .then(res => res.json())
       .then(data => {
         setVentas(data);
@@ -47,7 +47,7 @@ const VentasSiloroll = () => {
 
 
   useEffect(() => {
-    fetch('/api/product/get_products')
+    fetch('https://silo-roll-backend.onrender.com/product/get_products')
       .then(res => res.json())
       .then(data => {
         const productosConvertidos = data.map(producto => ({
@@ -60,7 +60,7 @@ const VentasSiloroll = () => {
   }, []);
 
   useEffect(() => {
-    fetch('/api/customer/get_customers')
+    fetch('https://silo-roll-backend.onrender.com/customer/get_customers')
       .then(res => res.json())
       .then(data => {
         setOpcionesClientes(data);
@@ -69,7 +69,7 @@ const VentasSiloroll = () => {
   }, []);
 
   useEffect(() => {
-    fetch('/api/warehouse/get_warehouses')
+    fetch('https://silo-roll-backend.onrender.com/warehouse/get_warehouses')
       .then(res => res.json())
       .then(data => {
         setOpcionesAlmacen(data);
@@ -78,7 +78,7 @@ const VentasSiloroll = () => {
   }, []);
 
   useEffect(() => {
-    fetch('/api/carrier/get_carriers')
+    fetch('https://silo-roll-backend.onrender.com/carrier/get_carriers')
       .then(res => res.json())
       .then(drivers => {
         const formattedDrivers = drivers.map(([code, name, last_name]) => ({
@@ -166,7 +166,7 @@ const VentasSiloroll = () => {
   const sendPostSale = () => {
 
     // Hacer fetch al backend para registar una venta
-    fetch('/api/sale/make_sale', {
+    fetch('https://silo-roll-backend.onrender.com/sale/make_sale', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

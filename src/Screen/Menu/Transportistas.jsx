@@ -17,12 +17,12 @@ const Transportistas = () => {
   const [form, setForm] = useState({ name: "", last_name: "", placa: "", phone: "" });
 
   useEffect(() => {
-    fetch('/api/carrier/get_carriers')
+    fetch('https://silo-roll-backend.onrender.com/carrier/get_carriers')
       .then(res => res.json())
       .then(async (drivers) => {
         const driversCompletos = await Promise.all(
           drivers.map(async ([code, name, last_name]) => {
-            const res = await fetch('/api/carrier/get_carrier', {
+            const res = await fetch('https://silo-roll-backend.onrender.com/carrier/get_carrier', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -68,7 +68,7 @@ const Transportistas = () => {
     setDrivers(drivers.filter((driver) => driver.code !== selectedDriver.code));
 
     // Hacer fetch al backend para eliminar al transportista
-    fetch('/api/carrier/delete_carrier', {
+    fetch('https://silo-roll-backend.onrender.com/carrier/delete_carrier', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -97,7 +97,7 @@ const Transportistas = () => {
       setDrivers(drivers.map((d) => (d.code === selectedDriver.code ? { ...form, code: d.code } : d)));
 
       // Hacer fetch al backend para editar la información del transportista
-      fetch('/api/carrier/edit_carrier', {
+      fetch('https://silo-roll-backend.onrender.com/carrier/edit_carrier', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -126,7 +126,7 @@ const Transportistas = () => {
       setDrivers([...drivers, { ...form }]);
 
       // Hacer fetch al backend para registrar el transportista
-      fetch('/api/carrier/register_carrier', {
+      fetch('https://silo-roll-backend.onrender.com/carrier/register_carrier', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

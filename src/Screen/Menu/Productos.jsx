@@ -12,7 +12,7 @@ const Productos = () => {
   const [form, setForm] = useState({ name: "", description: "", price: "", photo: "" });
 
   useEffect(() => {
-    fetch('/api/product/get_products')
+    fetch('https://silo-roll-backend.onrender.com/product/get_products')
       .then(res => res.json())
       .then(data => {
         const productosConvertidos = data.map(producto => ({
@@ -51,7 +51,7 @@ const Productos = () => {
     setProducts(products.filter((product) => product.code !== selectedProduct.code));
     
     // Hacer fetch al backend para eliminar el producto
-    fetch('/api/product/delete_product', {
+    fetch('https://silo-roll-backend.onrender.com/product/delete_product', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ const Productos = () => {
       setProducts(products.map((p) => (p.code === selectedProduct.code ? { ...form, code: p.code } : p)));
 
       // Hacer fetch al backend para editar el producto
-      fetch('/api/product/edit_product', {
+      fetch('https://silo-roll-backend.onrender.com/product/edit_product', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
@@ -109,7 +109,7 @@ const Productos = () => {
       setProducts([...products, { ...form }]);
 
       // Hacer fetch al backend para registrar el producto
-      fetch('/api/product/register_product', {
+      fetch('https://silo-roll-backend.onrender.com/product/register_product', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
