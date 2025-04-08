@@ -23,9 +23,7 @@ const dailyRevenues = dashboard.map(item => {
 const salesByMonth = [0, 0, 0, 0, 0, 0]; // Inicializamos con 0 para cada mes (Enero a Junio)
 
 dashboard.forEach(item => {
-  // Lógica para asignar el total de ventas al mes correspondiente
-  // Suponiendo que los días 1-31 corresponden a los meses 0-5 (Enero - Junio)
-  const monthIndex = Math.floor((item.day - 1) / 31); // Usamos el día para estimar el mes
+  const monthIndex = Math.floor((item.day - 1) / 31); 
   salesByMonth[monthIndex] += parseFloat(item.total_revenue.replace('$', '').replace(',', ''));
 });
 
