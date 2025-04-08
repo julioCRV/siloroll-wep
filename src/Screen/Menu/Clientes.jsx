@@ -1,20 +1,36 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Clientes.css";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const initialClients = [
-  { id: 1, name: "Carlos", surname: "Fernández", property: "Estancia La Esperanza", zone: "Norte", activity: "Ganadería", phone: "78945612" },
-  { id: 2, name: "Ana", surname: "Gutiérrez", property: "Granja Santa María", zone: "Oeste", activity: "Lechería", phone: "76543210" },
-  { id: 3, name: "Juan", surname: "Pérez", property: "Hacienda El Roble", zone: "Sur", activity: "Cría de Bovinos", phone: "70123456" },
-];
-
 const Clientes = () => {
   const navigate = useNavigate();
-  const [clients, setClients] = useState(initialClients);
+  const [clients, setClients] = useState([]);
   const [modalType, setModalType] = useState(null);
   const [selectedClient, setSelectedClient] = useState(null);
-  const [form, setForm] = useState({ name: "", surname: "", property: "", zone: "", activity: "", phone: "" });
+  const [form, setForm] = useState({ name: "", last_name: "", property: "", zone: "", activity: "", phone: "" });
+
+  useEffect(() => {
+    fetch('/api/customer/get_customers')
+      .then(res => res.json())
+      .then(async (clientes) => {
+        const clientesCompletos = await Promise.all(
+          clientes.map(async (cliente) => {
+            const res = await fetch('/api/customer/get_customer', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ code: cliente.code }),
+            });
+            const data = await res.json();
+            return { ...cliente, ...data };
+          })
+        );
+        setClients(clientesCompletos);
+      })
+      .catch(console.error);
+  }, []);
 
   const handleView = (client) => {
     setSelectedClient(client);
@@ -28,7 +44,7 @@ const Clientes = () => {
   };
 
   const handleRegister = () => {
-    setForm({ name: "", surname: "", property: "", zone: "", activity: "", phone: "" });
+    setForm({ name: "", last_name: "", property: "", zone: "", activity: "", phone: "" });
     setModalType("register");
   };
 
@@ -39,16 +55,68 @@ const Clientes = () => {
   };
 
   const handleDeleteConfirm = () => {
-    setClients(clients.filter((client) => client.id !== selectedClient.id));
+    setClients(clients.filter((client) => client.code !== selectedClient.code));
+
+    // Hacer fetch al backend para eliminar cliente
+    fetch('/api/customer/delete_customer', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        code: selectedClient.code,
+      })
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Error al eliminar el producto');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log("Cliente eliminado:", data);
+      })
+      .catch(error => {
+        console.error("Error:", error.message);
+      });
     closeModal();
   };
 
   const handleSave = () => {
     if (modalType === "edit") {
-      setClients(clients.map((c) => (c.id === selectedClient.id ? { ...form, id: c.id } : c)));
+      setClients(clients.map((c) => (c.code === selectedClient.code ? { ...form, code: c.code } : c)));
+      console.log(form)
+      // Hacer fetch al backend para editar el cliente
+      fetch('/api/customer/edit_customer', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          code: form.code,
+          name: form.name,
+          last_name: form.last_name,
+          property: form.property,
+          zone: form.zone,
+          activity: form.activity,
+          phone: form.phone
+        })
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Error al editar la información del cliente');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log("Cliente editado:", data);
+        })
+        .catch(error => {
+          console.error("Error:", error.message);
+        });
     } else if (modalType === "register") {
       setClients([...clients, { ...form, id: clients.length + 1 }]);
-console.log(form)
+      
       // Hacer fetch al backend para registrar el producto
       fetch('/api/customer/register_customer', {
         method: 'POST',
@@ -57,7 +125,7 @@ console.log(form)
         },
         body: JSON.stringify({
           name: form.name,
-          last_name: form.surname,
+          last_name: form.last_name,
           property: form.property,
           zone: form.zone,
           activity: form.activity,
@@ -97,6 +165,7 @@ console.log(form)
         onClick={() => navigate('/menu')}
       />
       <h2 className="clientes-title">Lista de Clientes</h2>
+      <button className="btn-registrar" onClick={handleRegister}>➕ Registrar Cliente</button>
       <table className="clientes-table">
         <thead>
           <tr>
@@ -106,8 +175,8 @@ console.log(form)
         </thead>
         <tbody>
           {clients.map((client) => (
-            <tr key={client.id}>
-              <td>{client.name} {client.surname}</td>
+            <tr key={client.code}>
+              <td>{client.name} {client.last_name}</td>
               <td>
                 <button className="btn btn-view" onClick={() => handleView(client)}>👁 Ver</button>
                 <button className="btn btn-edit" onClick={() => handleEdit(client)}>✏ Editar</button>
@@ -117,7 +186,6 @@ console.log(form)
           ))}
         </tbody>
       </table>
-      <button className="btn-registrar" onClick={handleRegister}>➕ Registrar Cliente</button>
 
       {/* MODALES */}
       {modalType && (
@@ -128,7 +196,7 @@ console.log(form)
             {/* MODAL VER */}
             {modalType === "view" && (
               <>
-                <h3>{selectedClient.name} {selectedClient.surname}</h3>
+                <h3>{selectedClient.name} {selectedClient.last_name}</h3>
                 <p><strong>Propiedad:</strong> {selectedClient.property}</p>
                 <p><strong>Zona:</strong> {selectedClient.zone}</p>
                 <p><strong>Actividad:</strong> {selectedClient.activity}</p>
@@ -144,7 +212,7 @@ console.log(form)
                 <input type="text" name="name" value={form.name} onChange={handleChange} />
 
                 <label>Apellido:</label>
-                <input type="text" name="surname" value={form.surname} onChange={handleChange} />
+                <input type="text" name="last_name" value={form.last_name} onChange={handleChange} />
 
                 <label>Propiedad:</label>
                 <input type="text" name="property" value={form.property} onChange={handleChange} />

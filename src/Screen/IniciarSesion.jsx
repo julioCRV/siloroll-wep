@@ -12,47 +12,6 @@ const Login = ({ login }) => {
   const [message, setMessage] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-
-  //   const data = {
-  //     user_name: user,
-  //     password: password,
-  //   };
-
-  //   try {
-  //     const response = await fetch("/api/user/login", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(data),
-  //     });
-
-  //     const result = await response.json();
-  //     console.log(result)
-
-  //     if (result.user_code === 1) {
-  //       localStorage.setItem('idusuario', result.user_code)
-  //       setOpenModal(true);
-  //       setMessage(true)
-  //       setTimeout(() => {
-  //         navigate('/Menu');
-  //         login(result.user_code);
-  //       }, 2400);
-  //     } else {
-  //       setOpenModal(true);
-  //       setMessage(false);
-  //       setTimeout(() => {
-  //         setOpenModal(false);
-  //       }, 1600);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error en la solicitud:", error);
-  //     setMessage("Hubo un problema al conectar con el servidor.");
-  //   }
-  // };
-
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -61,22 +20,63 @@ const Login = ({ login }) => {
       password: password,
     };
 
-    if (user=="MartinG" && password=="#7martin7#") {
-      localStorage.setItem('idusuario', user)
-      setOpenModal(true);
-      setMessage(true)
-      setTimeout(() => {
-        navigate('/Menu');
-        login(user);
-      }, 2400);
-    } else {
-      setOpenModal(true);
-      setMessage(false);
-      setTimeout(() => {
-        setOpenModal(false);
-      }, 1600);
+    try {
+      const response = await fetch("/api/user/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      console.log(result)
+
+      if (result.user_code === 1) {
+        localStorage.setItem('idusuario', result.user_code)
+        setOpenModal(true);
+        setMessage(true)
+        setTimeout(() => {
+          navigate('/Menu');
+          login(result.user_code);
+        }, 2400);
+      } else {
+        setOpenModal(true);
+        setMessage(false);
+        setTimeout(() => {
+          setOpenModal(false);
+        }, 1600);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+      setMessage("Hubo un problema al conectar con el servidor.");
     }
   };
+
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+
+  //   const data = {
+  //     user_name: user,
+  //     password: password,
+  //   };
+
+  //   if (user=="MartinG" && password=="#7martin7#") {
+  //     localStorage.setItem('idusuario', user)
+  //     setOpenModal(true);
+  //     setMessage(true)
+  //     setTimeout(() => {
+  //       navigate('/Menu');
+  //       login(user);
+  //     }, 2400);
+  //   } else {
+  //     setOpenModal(true);
+  //     setMessage(false);
+  //     setTimeout(() => {
+  //       setOpenModal(false);
+  //     }, 1600);
+  //   }
+  // };
 
   return (
     <div className="login-container">

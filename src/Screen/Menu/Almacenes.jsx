@@ -1,22 +1,40 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Almacenes.css";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const initialWarehouses = [
-  { id: 1, name: "Almacén Central", address: "Av. Industrial 456", products: [] },
-  { id: 2, name: "Depósito Norte", address: "Calle Comercio 123", products: [] },
-];
-
 const Almacenes = () => {
   const navigate = useNavigate();
-  const [warehouses, setWarehouses] = useState(initialWarehouses);
+  const [warehouses, setWarehouses] = useState([]);
   const [modalType, setModalType] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
-  const [form, setForm] = useState({ name: "", address: "" });
+  const [form, setForm] = useState({ name: "", direction: "" });
   const [productForm, setProductForm] = useState({ name: "", description: "", price: "" });
 
+  useEffect(() => {
+    fetch('/api/warehouse/get_warehouses')
+      .then(res => res.json())
+      .then(async (almacenes) => {
+        const almacenesCompletos = await Promise.all(
+          almacenes.map(async (almacen) => {
+            const res = await fetch('/api/warehouse/get_warehouse', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ code: almacen.code }),
+            });
+            const data = await res.json();
+            return { ...almacen, ...data };
+          })
+        );
+        setWarehouses(almacenesCompletos);
+      })
+      .catch(console.error);
+  }, []);
+
   const handleView = (warehouse) => {
+    console.log(warehouse)
     setSelectedWarehouse(warehouse);
     setModalType("view");
   };
@@ -28,7 +46,7 @@ const Almacenes = () => {
   };
 
   const handleRegister = () => {
-    setForm({ name: "", address: "" });
+    setForm({ name: "", direction: "" });
     setModalType("register");
   };
 
@@ -38,15 +56,87 @@ const Almacenes = () => {
   };
 
   const handleDeleteConfirm = () => {
-    setWarehouses(warehouses.filter((w) => w.id !== selectedWarehouse.id));
+    setWarehouses(warehouses.filter((w) => w.code !== selectedWarehouse.code));
+
+    // Hacer fetch al backend para eliminar el almacen
+    fetch('/api/warehouse/delete_warehouse', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        code: selectedWarehouse.code,
+      })
+    })
+      .then(res => {
+        if (!res.ok) {
+          throw new Error('Error al eliminar el almacen');
+        }
+        return res.json();
+      })
+      .then(data => {
+        console.log("Almacen eliminado:", data);
+      })
+      .catch(error => {
+        console.error("Error:", error.message);
+      });
     closeModal();
   };
 
   const handleSave = () => {
     if (modalType === "edit") {
-      setWarehouses(warehouses.map((w) => (w.id === selectedWarehouse.id ? { ...form, id: w.id } : w)));
+      setWarehouses(warehouses.map((w) => (w.code === selectedWarehouse.code ? { ...form, code: w.code } : w)));
+
+      // Hacer fetch al backend para editar el almacen
+      fetch('/api/warehouse/edit_warehouse', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          code: form.code,
+          name: form.name,
+          direction: form.direction
+        })
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Error al editar el almacen');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log("Almacen editado:", data);
+        })
+        .catch(error => {
+          console.error("Error:", error.message);
+        });
     } else if (modalType === "register") {
-      setWarehouses([...warehouses, { ...form, id: warehouses.length + 1, products: [] }]);
+      setWarehouses([...warehouses, { ...form }]);
+
+      // Hacer fetch al backend para registrar el almacen
+      fetch('/api/warehouse/register_warehouse', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: form.name,
+          direction: form.direction
+        })
+      })
+        .then(res => {
+          if (!res.ok) {
+            throw new Error('Error al egregar el almacen');
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log("Almacen agregado:", data);
+        })
+        .catch(error => {
+          console.error("Error:", error.message);
+        });
     }
     closeModal();
   };
@@ -79,7 +169,7 @@ const Almacenes = () => {
   const handleProductChange = (e) => {
     setProductForm({ ...productForm, [e.target.name]: e.target.value });
   };
-
+console.log(selectedWarehouse)
   return (
     <div className="almacenes-container">
       <FaArrowLeft
@@ -87,6 +177,7 @@ const Almacenes = () => {
         onClick={() => navigate('/menu')}
       />
       <h2 className="almacenes-title">Lista de Almacenes </h2>
+      <button className="btn-registrar" onClick={handleRegister}>➕ Registrar Almacén</button>
       <table className="almacenes-table">
         <thead>
           <tr>
@@ -96,7 +187,7 @@ const Almacenes = () => {
         </thead>
         <tbody>
           {warehouses.map((warehouse) => (
-            <tr key={warehouse.id}>
+            <tr key={warehouse.code}>
               <td>{warehouse.name}</td>
               <td>
                 <button className="btn btn-add" onClick={() => handleAddProduct(warehouse)}>➕ Agregar Producto</button>
@@ -108,7 +199,6 @@ const Almacenes = () => {
           ))}
         </tbody>
       </table>
-      <button className="btn-registrar" onClick={handleRegister}>➕ Registrar Almacén</button>
 
       {/* MODALES */}
       {modalType && (
@@ -120,12 +210,12 @@ const Almacenes = () => {
             {modalType === "view" && (
               <>
                 <h3>{selectedWarehouse.name}</h3>
-                <p><strong>Dirección:</strong> {selectedWarehouse.address}</p>
+                <p><strong>Dirección:</strong> {selectedWarehouse.direction}</p>
                 <h4>Productos Almacenados</h4>
                 {selectedWarehouse.products.length > 0 ? (
                   <ul>
                     {selectedWarehouse.products.map((product) => (
-                      <li key={product.id}>{product.name} - ${product.price}</li>
+                      <li key={product.code}>{product.product_name} - Bs {product.product_count}</li>
                     ))}
                   </ul>
                 ) : (
@@ -142,7 +232,7 @@ const Almacenes = () => {
                 <input type="text" name="name" value={form.name} onChange={handleChange} />
 
                 <label>Dirección:</label>
-                <input type="text" name="address" value={form.address} onChange={handleChange} />
+                <input type="text" name="direction" value={form.direction} onChange={handleChange} />
 
                 <button className="btn-save" onClick={handleSave}>
                   {modalType === "edit" ? "Guardar Cambios" : "Registrar"}

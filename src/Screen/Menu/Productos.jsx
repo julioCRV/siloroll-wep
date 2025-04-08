@@ -49,7 +49,7 @@ const Productos = () => {
 
   const handleDeleteConfirm = () => {
     setProducts(products.filter((product) => product.code !== selectedProduct.code));
-    // Hacer fetch al backend para editar el producto
+    // Hacer fetch al backend para eliminar el producto
     fetch('/api/product/delete_product', {
       method: 'PUT',
       headers: {
@@ -67,7 +67,6 @@ const Productos = () => {
       })
       .then(data => {
         console.log("Producto eliminado:", data);
-        // Aquí podrías actualizar la lista de productos si deseas
       })
       .catch(error => {
         console.error("Error:", error.message);
