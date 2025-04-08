@@ -1,0 +1,14 @@
+# Archivo de configuración para Netlify
+[[redirects]]
+  from = "/api/*"
+  to = "https://silo-roll-backend.onrender.com/:splat"  # Redirige a tu backend
+  status = 200
+  force = true
+  query = { "somekey" = "somevalue" }
+
+# Esto también permite redirigir todas las solicitudes a la API sin afectar el frontend
+[[redirects]]
+  from = "/api/*"
+  to = "https://silo-roll-backend.onrender.com/:splat"
+  status = 200
+  force = true
