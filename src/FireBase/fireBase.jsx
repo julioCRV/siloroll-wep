@@ -8,13 +8,13 @@ import { getStorage } from "firebase/storage";
 
 // Configuración de Firebase con las claves y parámetros específicos del proyecto
 const firebaseConfig = {
-  apiKey: "AIzaSyCzqTojtFkspoATG8nm5y2ziU1Mp1TCpEM",
-  authDomain: "silo-roll.firebaseapp.com",
-  projectId: "silo-roll",
-  storageBucket: "silo-roll.firebasestorage.app",
-  messagingSenderId: "441765175511",
-  appId: "1:441765175511:web:3959ad9457cdc3a1bf9092",
-  measurementId: "G-347NTM3KFJ"
+  apiKey: "AIzaSyB3z2EjI6uxj9sP-lyUg77rvxAJuO-1pyI",
+  authDomain: "bd-wilsmart.firebaseapp.com",
+  databaseURL: "https://bd-wilsmart-default-rtdb.firebaseio.com",
+  projectId: "bd-wilsmart",
+  storageBucket: "bd-wilsmart.appspot.com",
+  messagingSenderId: "722305794719",
+  appId: "1:722305794719:web:024468d96eadc9534e98aa"
 };
 
 // Inicialización de la aplicación Firebase con la configuración

@@ -40,7 +40,7 @@ const App = () => {
       ) : (
         <Routes>
           <Route path="/" element={<Menu CerrarSesion={CerrarSesion} />} />
-   
+          <Route path='/menu' element={<Menu />} />
           <Route path='/almacenes' element={<Almacenes />} />
           <Route path='/clientes' element={< Clientes />} />
           <Route path='/panel' element={<Panel />} />
