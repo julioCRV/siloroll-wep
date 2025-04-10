@@ -16,7 +16,7 @@ body {
 
 .almacenes-table {
   width: 100%;
-  max-width: 600px;
+  max-width: 1000px;
   margin: 0 auto;
   border-collapse: collapse;
   background: white;
@@ -46,13 +46,23 @@ body {
   font-size: 14px;
 }
 
+.btn-add {
+  background-color: #8ed218;
+  color: white;
+}
+
+.btn-modify {
+  background-color: #9b59b6 ;
+  color: white;
+}
+
 .btn-view {
   background-color: #3498db;
   color: white;
 }
 
 .btn-edit {
-  background-color: #f1c40f;
+  background-color:	#f39c12;
   color: black;
 }
 
@@ -91,7 +101,7 @@ body {
   border-radius: 10px;
   text-align: center;
   position: relative;
-  width: 80%;
+  width: 100%;
   max-width: 400px;
 }
 
@@ -108,16 +118,17 @@ body {
 
 
 .modal-close:hover {
-    color: #c0392b;
-  }
-  
-  input, textarea {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  }
+  color: #c0392b;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
 .modal-actions {
   display: flex;
@@ -133,4 +144,49 @@ body {
 .btn-confirm {
   background-color: #27ae60;
   color: white;
+}
+
+.modal-content2 h2 {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+.modal-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.modal-content th,
+.modal-content td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.modal-content th {
+  background-color: #f8f8f8;
+  color: #444;
+  font-weight: 600;
+}
+
+.modal-content tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.btn-assign {
+  background-color: #28a745;
+  color: white;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.btn-assign:hover {
+  background-color: #218838;
 }

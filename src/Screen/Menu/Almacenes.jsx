@@ -9,6 +9,7 @@ const Almacenes = () => {
   const [products, setProducts] = useState([]);
   const [modalType, setModalType] = useState(null);
   const [selectedWarehouse, setSelectedWarehouse] = useState(null);
+  const [selectedWarehouseAux, setSelectedWarehouseAux] = useState(null);
   const [form, setForm] = useState({ name: "", direction: "" });
   const [productForm, setProductForm] = useState({ name: "", description: "", price: "" });
 
@@ -48,7 +49,6 @@ const Almacenes = () => {
   }, []);
 
   const handleView = (warehouse) => {
-    console.log(warehouse)
     setSelectedWarehouse(warehouse);
     setModalType("view");
   };
@@ -159,7 +159,14 @@ const Almacenes = () => {
     setSelectedWarehouse(warehouse);
     setProductForm({ name: "", description: "", price: "" });
     setModalType("addProduct");
+  };
 
+
+  const handleModifyProduct = (warehouse) => {
+    setSelectedWarehouse(warehouse);
+    setSelectedWarehouseAux(JSON.parse(JSON.stringify(warehouse)));
+    setProductForm({ name: "", description: "", price: "" });
+    setModalType("modifyProduct");
   };
 
   const handleSaveProduct = (product) => {
@@ -211,17 +218,81 @@ const Almacenes = () => {
   };
 
   const actualizarProductos = () => {
-    fetch('https://silo-roll-backend.onrender.com/product/get_products') // Solicitar los productos nuevamente
+    fetch('https://silo-roll-backend.onrender.com/warehouse/get_warehouses')
       .then(res => res.json())
-      .then(data => {
-        const productosConvertidos = data.map(producto => ({
-          ...producto,
-          price: parseFloat(producto.price.replace('$', '')) // Convertir precio a número
-        }));
-        setProducts(productosConvertidos); // Actualizar el estado
+      .then(async (almacenes) => {
+        const almacenesCompletos = await Promise.all(
+          almacenes.map(async (almacen) => {
+            const res = await fetch('https://silo-roll-backend.onrender.com/warehouse/get_warehouse', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ code: almacen.code }),
+            });
+            const data = await res.json();
+            return { ...almacen, ...data };
+          })
+        );
+        setWarehouses(almacenesCompletos);
       })
       .catch(console.error);
   };
+
+  const handleQuantityChange = (index, value) => {
+    const updatedProducts = [...selectedWarehouseAux.products];
+    updatedProducts[index].product_count = parseInt(value) || 0;
+    setSelectedWarehouseAux({ ...selectedWarehouseAux, products: updatedProducts });
+  };
+
+  const handleSaveQuantityChanges = async () => {
+    try {
+      const cambios = [];
+
+      selectedWarehouse.products.forEach((originalProduct) => {
+        const modificado = selectedWarehouseAux.products.find(
+          (p) => p.code === originalProduct.code
+        );
+
+        if (modificado && originalProduct.product_count !== modificado.product_count) {
+          cambios.push({
+            code: modificado.code,
+            amount: modificado.product_count
+          });
+        }
+      });
+
+      // Si no hubo cambios, mostramos un mensaje
+      if (cambios.length === 0) {
+        alert("No se detectaron cambios en las cantidades.");
+        return;
+      }
+
+      // Hacer los fetchs uno por uno (puedes usar Promise.all si quieres paralelizar)
+      for (const cambio of cambios) {
+        const response = await fetch(`https://silo-roll-backend.onrender.com/warehouse/modify_warehouse`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(cambio)
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error al actualizar el producto con código ${cambio.code}`);
+        }
+      }
+
+      console.log('Cantidades actualizadas correctamente');
+      setModalType(null);
+
+    } catch (error) {
+      console.error(error);
+      alert('Hubo un error al guardar los cambios');
+    }
+  };
+
+
 
   return (
     <div className="almacenes-container">
@@ -243,8 +314,9 @@ const Almacenes = () => {
             <tr key={warehouse.code}>
               <td>{warehouse.name}</td>
               <td>
-                <button className="btn btn-add" onClick={() => handleAddProduct(warehouse)}>➕ Asignar Producto</button>
-                <button className="btn btn-view" onClick={() => handleView(warehouse)}>👁 Ver</button>
+                <button className="btn btn-add" onClick={() => handleAddProduct(warehouse)}>➕📦 Asignar <br /> Producto</button>
+                <button className="btn btn-modify" onClick={() => handleModifyProduct(warehouse)}>✏📦 Modificar <br /> Cantidad</button>
+                <button className="btn btn-view" onClick={() => handleView(warehouse)}>👁 Ver </button>
                 <button className="btn btn-edit" onClick={() => handleEdit(warehouse)}>✏ Editar</button>
                 <button className="btn btn-delete" onClick={() => handleDeleteRequest(warehouse)}>🗑 Eliminar</button>
               </td>
@@ -268,7 +340,7 @@ const Almacenes = () => {
                 {selectedWarehouse.products.length > 0 ? (
                   <ul>
                     {selectedWarehouse.products.map((product) => (
-                      <li key={product.code}>{product.product_name} - Bs {product.product_count}</li>
+                      <li key={product.code}>{product.product_name} - Cantidad: {product.product_count}</li>
                     ))}
                   </ul>
                 ) : (
@@ -295,13 +367,13 @@ const Almacenes = () => {
 
             {/* MODAL AGREGAR PRODUCTO */}
             {modalType === "addProduct" && (
-              <>
-                <h3>Asignar Producto a {selectedWarehouse.name}</h3>
+              <div className="modal-content2">
+                <h2>Asignar Producto a: {selectedWarehouse.name}</h2>
                 <table>
                   <thead>
                     <tr>
                       <th>Nombre</th>
-                      <th>Descripción</th>
+                      {/* <th>Descripción</th> */}
                       <th>Precio</th>
                       <th>Acción</th>
                     </tr>
@@ -310,7 +382,7 @@ const Almacenes = () => {
                     {products.map((product) => (
                       <tr key={product.code}>
                         <td>{product.name}</td>
-                        <td>{product.description}</td>
+                        {/* <td>{product.description}</td> */}
                         <td>{product.price}</td>
                         <td>
                           <button
@@ -324,8 +396,47 @@ const Almacenes = () => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+
+            {/* MODAL MODIFICAR PRODUCTO */}
+            {modalType === "modifyProduct" && (
+              <>
+                <h3>Modificar Cantidad de Productos en: {selectedWarehouseAux.name}</h3>
+                <p><strong>Dirección:</strong> {selectedWarehouseAux.direction}</p>
+                {selectedWarehouseAux.products.length > 0 ? (
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Nombre del Producto</th>
+                        <th>Cantidad</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {selectedWarehouseAux.products.map((product, index) => (
+                        <tr key={product.code}>
+                          <td>{product.product_name}</td>
+                          <td>
+                            <input
+                              type="number"
+                              value={product.product_count}
+                              min="0"
+                              onChange={(e) => handleQuantityChange(index, e.target.value)}
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <p>No hay productos en este almacén.</p>
+                )}
+                <button className="btn-save" onClick={handleSaveQuantityChanges}>
+                  Guardar Cambios
+                </button>
               </>
             )}
+
 
 
             {/* MODAL ELIMINAR */}
